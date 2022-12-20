@@ -55,6 +55,15 @@ const ViewStore = t
                 });
             });
         },
+        ajaxUpdateItem(data) {
+            let newItem = self.updateItem(data);
+            return new Promise((r) => {
+                db.updateItem({ items: [newItem] }).then(() => {
+                    // self.addItem(addData);
+                    r();
+                });
+            });
+        },
         ajaxDeleteItem(uid) {
             let ind = self.items.findIndex((e) => e.uid === uid);
             if (ind !== -1) {
@@ -74,14 +83,16 @@ const ViewStore = t
                     delete addData[e];
                 }
             });
-            return self.items.push(addData);
+            self.items.push(addData);
+            return addData;
         },
         updateItem(data) {
             let ind = self.items.findIndex((e) => e.uid === data.uid);
             if (ind !== -1) {
                 self.items[ind].updateItem(data);
+                return self.items[ind];
             } else {
-                self.addItem(data);
+                return self.addItem(data);
             }
         },
         deleteItem(uid) {

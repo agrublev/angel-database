@@ -12,12 +12,16 @@ export default class AddItem extends Component {
                     <form
                         onSubmit={(e) => {
                             e.preventDefault();
-                            this.props.store.viewStore
-                                .ajaxAddItem({ name: this.nameRef.value })
-                                .then((r) => {
-                                    this.props.store.viewStore.fetchItems();
-                                    this.nameRef.value = "";
-                                });
+                            if (this.nameRef.value.length > 0) {
+                                this.props.store.viewStore
+                                    .ajaxAddItem({ name: this.nameRef.value })
+                                    .then((r) => {
+                                        this.props.store.viewStore.fetchItems();
+                                        this.nameRef.value = "";
+                                    });
+                            } else {
+                                alert("Can't be empty");
+                            }
                         }}
                     >
                         <input
