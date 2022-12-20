@@ -31,7 +31,7 @@ const ViewStore = t
         fetchItems() {
             self.subscribeToItems().then(({ items }) => {
                 items.map((item) => {
-                    self.updateItem(item);
+                    self.addUpdateItem(item);
                 });
                 // self.setCurrentItem(self.items[0].uid);
             });
@@ -50,27 +50,8 @@ const ViewStore = t
 
             return new Promise((r) => {
                 db.updateItem({ items: [addData] }).then(() => {
-                    // self.addItem(addData);
                     r();
                 });
-            });
-        },
-        ajaxUpdateItem(data) {
-            let newItem = self.updateItem(data);
-            return new Promise((r) => {
-                db.updateItem({ items: [newItem] }).then(() => {
-                    // self.addItem(addData);
-                    r();
-                });
-            });
-        },
-        ajaxDeleteItem(uid) {
-            let ind = self.items.findIndex((e) => e.uid === uid);
-            if (ind !== -1) {
-                self.deleteItem(uid);
-            }
-            db.setItem({ items: toJS(self.items) }).then(() => {
-                self.fetchItems();
             });
         },
         addItem(data) {
@@ -86,14 +67,30 @@ const ViewStore = t
             self.items.push(addData);
             return addData;
         },
-        updateItem(data) {
+        ajaxUpdateItem(data) {
+            let newItem = self.addUpdateItem(data);
+            return new Promise((r) => {
+                db.setItem({ items: toJS(self.items) }).then(() => {
+                    self.fetchItems();
+                    r();
+                });
+            });
+        },
+        addUpdateItem(data) {
             let ind = self.items.findIndex((e) => e.uid === data.uid);
             if (ind !== -1) {
-                self.items[ind].updateItem(data);
+                self.items[ind].extendItem(data);
                 return self.items[ind];
             } else {
                 return self.addItem(data);
             }
+        },
+        ajaxDeleteItem(uid) {
+            self.deleteItem(uid);
+
+            db.setItem({ items: toJS(self.items) }).then(() => {
+                self.fetchItems();
+            });
         },
         deleteItem(uid) {
             const inx = self.items.findIndex((e) => e.uid === uid);

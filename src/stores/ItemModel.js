@@ -8,7 +8,7 @@ const ItemModel = t
     })
     .views((self) => ({}))
     .actions((self) => ({
-        updateItem({ name }) {
+        extendItem({ name }) {
             self = Object.assign(self, { name });
             return self;
         },

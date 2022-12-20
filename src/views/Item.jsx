@@ -19,10 +19,8 @@ class Item extends Component {
                             e.preventDefault();
                             this.props.store.viewStore
                                 .ajaxUpdateItem({ ...item, name: this.nameRef.value })
-                                .then((r) => {
-                                    this.props.store.viewStore.fetchItems();
+                                .then(() => {
                                     this.toggleEdit();
-                                    // this.nameRef.value = "";
                                 });
                         }}
                     >
