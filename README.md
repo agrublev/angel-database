@@ -1,4 +1,4 @@
-# Amazing FC Boilerplate with React
+# The most amazing database
 
 Just run ```yarn``` and enter a project name.
 
