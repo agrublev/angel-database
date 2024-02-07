@@ -1,26 +1,17 @@
-"use strict";
 const webpack = require("webpack");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
-const CompressionPlugin = require("compression-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { resolve } = require("path");
-const CopyPlugin = require("copy-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
-    mode: "production",
-    // devtool: "cheap-module-source-map",
-    // devtool: "source-map",
+    mode: "development",
     entry: [
         "./src/index.js" // your app's entry point
     ],
+    //devtool: "source-map",
+    devtool: process.env.WEBPACK_DEVTOOL || "eval-source-map",
     output: {
-        publicPath: "./",
-        path: path.join(__dirname, "dist"),
         filename: "bundle.js"
     },
     module: {
@@ -63,7 +54,7 @@ module.exports = {
                         ],
                         "@babel/plugin-transform-runtime",
                         "add-react-displayname",
-                        ["transform-remove-console"]
+                        ["react-hot-loader/babel"]
                     ]
                 }
             },
@@ -167,26 +158,30 @@ module.exports = {
                     {
                         loader: MiniCssExtractPlugin.loader,
                         options: {
-                            sourceMap: true,
-                            hmr: false
+                            sourceMap: true, //process.env.NODE_ENV !== "development",
+                            hmr: true
                         }
                     },
                     "css-loader"
                 ]
             },
             {
-                test: /\.less$/,
-                exclude: /node_modules/,
+                test: /\.less$/i,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
-                        options: {
-                            sourceMap: true,
-                            hmr: false
-                        }
+                        loader: "style-loader"
                     },
-                    "css-loader",
-                    "less-loader"
+                    {
+                        loader: "css-loader"
+                    },
+                    {
+                        loader: "less-loader",
+                        options: {
+                            lessOptions: {
+                                strictMath: true
+                            }
+                        }
+                    }
                 ]
             }
         ]
@@ -198,90 +193,20 @@ module.exports = {
         ],
         symlinks: true,
         alias: {
-            components: path.resolve(__dirname, "views/Components")
+            // components: path.resolve(__dirname, "views/Components")
         }
     },
-    optimization: {
-        splitChunks: {
-            chunks: "async",
-            minSize: 20000,
-            minRemainingSize: 0,
-            minChunks: 1,
-            maxAsyncRequests: 30,
-            maxInitialRequests: 30,
-            enforceSizeThreshold: 50000,
-            cacheGroups: {
-                defaultVendors: {
-                    test: /[\\/]node_modules[\\/]/,
-                    priority: -10,
-                    reuseExistingChunk: true
-                },
-                default: {
-                    minChunks: 2,
-                    priority: -20,
-                    reuseExistingChunk: true
-                }
-            }
-        },
-        minimize: true,
-        minimizer: [
-            // This is only used in production mode
-            new TerserPlugin({
-                terserOptions: {
-                    parse: {
-                        ecma: 8
-                    },
-                    compress: {
-                        ecma: 5,
-                        warnings: false,
-                        comparisons: false,
-                        inline: 2
-                    },
-                    mangle: {
-                        safari10: true
-                    },
-                    output: {
-                        ecma: 5,
-                        comments: false,
-                        ascii_only: true
-                    }
-                },
-                extractComments: false
-            }),
-            new OptimizeCSSAssetsPlugin({})
-        ]
+    devServer: {
+        open: true,
+        compress: true,
+        hot: true,
+        historyApiFallback: true,
+        port: 5001
     },
     plugins: [
-        new CleanWebpackPlugin(),
-        new webpack.DefinePlugin({
-            "process.env": {
-                NODE_ENV: '"production"'
-            }
-        }),
-        new MiniCssExtractPlugin({
-            sourceMap: true,
-            filename: "style.css",
-            chunkFilename: "[id].css"
-        }),
-        new CompressionPlugin({
-            algorithm: "gzip"
-        }),
-        new CopyPlugin({
-            patterns: [
-                { from: "public/manifest.json", to: "./" },
-                { from: "public/favicon.png", to: "./" },
-                { from: "public/favicon.svg", to: "./" }
-            ]
-        }),
-        new HtmlWebpackPlugin({
-            template: resolve("public", "index.html"),
-            filename: "index.html",
-            files: {
-                css: ["style.css"],
-                js: ["bundle.js"]
-            }
-        })
-        // ,new BundleAnalyzerPlugin()
-        // new webpack.SourceMapDevToolPlugin({})
+        new webpack.NoEmitOnErrorsPlugin(),
+        // new webpack.NamedModulesPlugin(),
+        new webpack.HotModuleReplacementPlugin(),
+        new HtmlWebpackPlugin({ template: resolve("public", "index.html") })
     ]
 };

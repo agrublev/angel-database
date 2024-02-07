@@ -1,12 +1,14 @@
-import { createRoot } from "react-dom/client";
-import { Provider } from "mobx-react";
+import React from "react";
+import ReactDOM from "react-dom";
 import App from "./App";
-import { rootStore } from "./stores/RootStore";
 
-const container = document.getElementById("app");
-const root = createRoot(container);
-root.render(
-	<Provider store={rootStore}>
-		<App />
-	</Provider>
-);
+ReactDOM.render(<App />, document.getElementById("root"));
+
+
+if (module.hot) {
+    module.hot.accept(); // already had this init code
+
+    module.hot.addStatusHandler((status) => {
+        if (status === "prepare") console.clear();
+    });
+}

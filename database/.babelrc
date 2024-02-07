@@ -1,0 +1,14 @@
+{
+  "minified": true,
+  "comments": false,
+  "sourceMap": false,
+  "presets": [
+    [
+      "minify",
+      {
+        "mangle": {},
+        "keepFnName": false
+      }
+    ]
+  ]
+}
