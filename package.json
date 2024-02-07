@@ -6,7 +6,7 @@
         "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress --profile --config webpack.config.dev.js",
         "starts": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --progress --profile --inspect --config webpack.config.dev.js",
         "build": "NODE_ENV=production webpack  --progress --config ./webpack.config.js",
-        "deploy": "npx surge dist ag-crud.surge.sh",
+        "deploy": "npx surge ./dist the-crud-app-angel-db.surge.sh",
         "release": "run-s build deploy",
         "test": "cross-env NODE_ENV=test jest --config jest.config.js --runInBand --forceExit --detectOpenHandles",
         "test:lint": "eslint ./src --quiet"
